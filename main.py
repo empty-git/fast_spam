@@ -40,7 +40,9 @@ def bot_spammer(users: list):
                 json_file = response.json()
                 if json_file['ok']:
                     sended_messages_count += 1
-                print(f"Message for user with id - {user_id} DONE")
+                    print(f"Message for user with id - {user_id} DONE")
+                else:
+                    error_messages_count = +1
         except Exception as e:
             error_messages_count = +1
             print(f"Error while send request with message for user - {user_id}: {e}")

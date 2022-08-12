@@ -15,6 +15,7 @@ def get_users():
             length = len(response.text.split("\n"))
             if length > 0:
                 users = response.text.split("</br>")
+                users = [user for user in users if len(user)>4]
                 print("Users get  -  Done !")
                 return users
             else:
@@ -35,23 +36,29 @@ def bot_spammer(users: list):
     error_messages_count = 0
     for user_id in users:
         try:
+            print(user_id)
             response = requests.get(API_URL.format(BOT_TOKEN, user_id, MESSAGE_TEXT))
             if response.status_code == 200:
                 json_file = response.json()
                 if json_file['ok']:
                     sended_messages_count += 1
-                    print(f"Message for user with id - {user_id} DONE")
+                    print(f"Message for user with id - {user_id} DONE\n")
                 else:
-                    error_messages_count = +1
+                    error_messages_count +=1
+                    print(f"User with id {user_id} not received message because status not OK.\nDescription:{response.text}\n")
+            else:
+                error_messages_count += 1
+                print(f"User with id {user_id} not received message because status code not 200.\nDescription:{response.text}\n")
         except Exception as e:
-            error_messages_count = +1
+            error_messages_count += 1
             print(f"Error while send request with message for user - {user_id}: {e}")
-    print(F"RESULTS:\nMESSAGES SEND COUNT = {sended_messages_count}\nBad requests send count = {error_messages_count}")
+    print(f"\nRESULTS:\nMESSAGES SEND COUNT = {sended_messages_count}\nBad requests send count = {error_messages_count}\n")
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     users = get_users()
+    print(f"Count users = {len(users)}\n")
     if users is not None:
         bot_spammer(users = users)
     else:
